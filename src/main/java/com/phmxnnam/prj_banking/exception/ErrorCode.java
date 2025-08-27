@@ -1,0 +1,30 @@
+package com.phmxnnam.prj_banking.exception;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@Getter
+public enum ErrorCode {
+
+    UNCATEGORIZED_EXCEPTION(9999,"uncategorized error."),
+    USER_EXISTED(1001,"user existed."),
+    NAME_INVALID(1002,"must be at least 10 characters."),
+    USERNAME_INVALID(1003, "must be at least 8 character."),
+    PASSWORD_INVALID(1004, "must be at least 8 characters."),
+    EMAIL_INVALID(1005, "email invalid."),
+    PHONE_INVALID(1006,"must be 10 numbers."),
+    DOB_INVALID(1007, "must be at least 18.")
+    ;
+
+    ErrorCode(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    int code;
+    String message;
+}
