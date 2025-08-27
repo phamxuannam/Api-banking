@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /banking
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/prj_banking"
+    username: root
+    password: nam01665478954
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
