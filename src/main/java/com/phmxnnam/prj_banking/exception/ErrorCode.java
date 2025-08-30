@@ -11,13 +11,17 @@ import lombok.experimental.FieldDefaults;
 public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999,"uncategorized error."),
+    USER_NOT_EXISTS(1000 ,"user not exist."),
     USER_EXISTED(1001,"user existed."),
     NAME_INVALID(1002,"must be at least 10 characters."),
     USERNAME_INVALID(1003, "must be at least 8 character."),
     PASSWORD_INVALID(1004, "must be at least 8 characters."),
     EMAIL_INVALID(1005, "email invalid."),
     PHONE_INVALID(1006,"must be 10 numbers."),
-    DOB_INVALID(1007, "must be at least 18.")
+    DOB_INVALID(1007, "must be at least 18."),
+    ROLE_EXISTED(1008, "role existed."),
+    ROLE_NOT_EXIST(1009,"role not exist."),
+    CUSTOMER_NOT_EXISTS(1010,"customer not exist.")
     ;
 
     ErrorCode(int code, String message) {

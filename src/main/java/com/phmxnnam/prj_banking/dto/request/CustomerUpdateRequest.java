@@ -18,10 +18,6 @@ public class CustomerUpdateRequest {
     @Size(min = 10, message = "NAME_INVALID")
     String fullName;
 
-
-    @Size(min = 8, message = "PASSWORD_INVALID")
-    String password;
-
     @DobValidator(min = 18, message = "DOB_INVALID")
     LocalDate dob;
 

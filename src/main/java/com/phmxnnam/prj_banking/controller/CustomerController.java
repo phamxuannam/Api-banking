@@ -20,31 +20,55 @@ public class CustomerController {
 
     @PostMapping
     ApiResponse<CustomerResponse> create(@RequestBody @Valid CustomerCreationRequest request){
-        return ApiResponse.<CustomerResponse>builder().build();
+        return ApiResponse.<CustomerResponse>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.create(request))
+                .build();
     }
 
     @GetMapping
     ApiResponse<List<CustomerResponse>> getAll(){
-        return ApiResponse.<List<CustomerResponse>>builder().build();
+        return ApiResponse.<List<CustomerResponse>>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.getAll())
+                .build();
     }
 
     @GetMapping("/{id}")
     ApiResponse<CustomerResponse> getById(@PathVariable String id){
-        return ApiResponse.<CustomerResponse>builder().build();
+        return ApiResponse.<CustomerResponse>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.getById(id))
+                .build();
     }
 
     @PutMapping("/{id}")
-    ApiResponse<CustomerResponse> updateById(@PathVariable String id, @RequestBody CustomerUpdateRequest request){
-        return ApiResponse.<CustomerResponse>builder().build();
+    ApiResponse<CustomerResponse> updateById(@PathVariable String id, @RequestBody @Valid CustomerUpdateRequest request){
+        return ApiResponse.<CustomerResponse>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.updateById(request, id))
+                .build();
     }
 
     @PatchMapping("/{id}")
-    ApiResponse<Void> turnOnOfById(@PathVariable String id){
-        return ApiResponse.<Void>builder().build();
+    ApiResponse<String> turnOnOfCus(@PathVariable String id){
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.turnOnOffCus(id))
+                .build();
     }
 
     @DeleteMapping
-    ApiResponse<Void> deleteById(@PathVariable String id){
-        return ApiResponse.<Void>builder().build();
+    ApiResponse<String> deleteCus(@PathVariable String id){
+        return ApiResponse.<String>builder()
+                .code(200)
+                .message("OK")
+                .result(customerService.deleteCus(id))
+                .build();
     }
 }

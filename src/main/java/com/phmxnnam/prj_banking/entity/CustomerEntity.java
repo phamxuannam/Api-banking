@@ -1,12 +1,12 @@
 package com.phmxnnam.prj_banking.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "customers")
@@ -14,16 +14,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Builder
 public class CustomerEntity extends BaseEntity {
 
     @Column
+    String identification;
+
+    @Column
     String fullName;
-
-    @Column(nullable = false)
-    String username;
-
-    @Column(nullable = false)
-    String password;
 
     @Column(nullable = false)
     LocalDate dob;
@@ -37,6 +35,6 @@ public class CustomerEntity extends BaseEntity {
     @Column
     String address;
 
-    @Column
-    int isActive;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<UserEntity> users;
 }
