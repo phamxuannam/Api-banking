@@ -11,6 +11,6 @@ public interface IUserService {
     List<UserResponse> getAll();
     UserResponse getById(String id);
     UserResponse changePassword(UserUpdateRequest request, String id);
-    String turnOnOfUserById(String id);
+    String turnOnOffUserById(String id);
     String deleteUserById(String id);
 }

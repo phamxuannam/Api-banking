@@ -18,4 +18,5 @@ public class CustomerResponse {
     String phoneNumber;
     String address;
     List<UserResponse> users;
+    List<AccountResponse> accounts;
 }

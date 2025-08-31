@@ -59,7 +59,7 @@ public class UserController {
         return ApiResponse.<String>builder()
                 .code(200)
                 .message("OK")
-                .result(userService.turnOnOfUserById(id))
+                .result(userService.turnOnOffUserById(id))
                 .build();
     }
 

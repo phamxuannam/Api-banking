@@ -8,9 +8,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AccountMapper.class, UserMapper.class})
 public interface CustomerMapper {
     @Mapping(target = "users", ignore = true)
+    @Mapping(target = "accounts", ignore = true)
     CustomerEntity toEntity(CustomerCreationRequest request);
 
     CustomerResponse toResponse(CustomerEntity entity);

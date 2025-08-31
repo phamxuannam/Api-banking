@@ -5,11 +5,13 @@ import com.phmxnnam.prj_banking.dto.request.UserCreationRequest;
 import com.phmxnnam.prj_banking.dto.request.UserUpdateRequest;
 import com.phmxnnam.prj_banking.dto.response.UserResponse;
 import com.phmxnnam.prj_banking.entity.CustomerEntity;
+import com.phmxnnam.prj_banking.entity.RoleEntity;
 import com.phmxnnam.prj_banking.entity.UserEntity;
 import com.phmxnnam.prj_banking.exception.AppException;
 import com.phmxnnam.prj_banking.exception.ErrorCode;
 import com.phmxnnam.prj_banking.mapper.UserMapper;
 import com.phmxnnam.prj_banking.repository.CustomerRepository;
+import com.phmxnnam.prj_banking.repository.RoleRepository;
 import com.phmxnnam.prj_banking.repository.UserRepository;
 import com.phmxnnam.prj_banking.service.IUserService;
 import jakarta.transaction.Transactional;
@@ -18,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -27,8 +31,10 @@ public class UserService implements IUserService {
 
     UserRepository userRepository;
     UserMapper userMapper;
+    RoleRepository roleRepository;
     CustomerRepository customerRepository;
     PasswordConfig passwordConfig;
+
 
     @Override
     public UserResponse create(UserCreationRequest request) {
@@ -36,10 +42,15 @@ public class UserService implements IUserService {
         CustomerEntity customer = customerRepository.findById(request.getCustomer_id()).orElseThrow( () ->
                 new AppException(ErrorCode.CUSTOMER_NOT_EXISTS) );
 
+        RoleEntity role = roleRepository.findById("customer").orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));
+        Set<RoleEntity> setRole = new HashSet<>();
+        setRole.add(role);
+
         UserEntity user = userMapper.toEntity(request);
         user.setIsActive(1);
         user.setPassword(passwordConfig.passwordEncoder().encode(request.getPassword()));
         user.setCustomer(customer);
+        user.setRoles(setRole);
 
         return userMapper.toResponse(userRepository.save(user));
     }
@@ -64,7 +75,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String turnOnOfUserById(String id) {
+    public String turnOnOffUserById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         if(user.getIsActive() == 1){
             user.setIsActive(0);
@@ -81,8 +92,8 @@ public class UserService implements IUserService {
     public String deleteUserById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
 
-//        user.getRoles().clear();
-//        userRepository.save(user);
+        user.getRoles().clear();
+        userRepository.save(user);
 
         userRepository.delete(user);
         return "deleted user.";

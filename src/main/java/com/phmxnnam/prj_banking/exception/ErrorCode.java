@@ -21,7 +21,10 @@ public enum ErrorCode {
     DOB_INVALID(1007, "must be at least 18."),
     ROLE_EXISTED(1008, "role existed."),
     ROLE_NOT_EXIST(1009,"role not exist."),
-    CUSTOMER_NOT_EXISTS(1010,"customer not exist.")
+    CUSTOMER_NOT_EXISTS(1010,"customer not exist."),
+    PHONE_NUMBER_EXISTED(1011,"phone number already in use."),
+    ACCOUNT_EXISTED(1012,"account number existed."),
+    ACCOUNT_NOT_EXISTS(1013,"account number not exists.")
     ;
 
     ErrorCode(int code, String message) {

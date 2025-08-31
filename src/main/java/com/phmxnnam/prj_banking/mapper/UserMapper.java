@@ -16,6 +16,7 @@ public interface UserMapper {
     UserEntity toEntity(UserCreationRequest request);
 
     @Mapping(source = "customer.id", target = "customer_id")
+    @Mapping(source = "isActive",target = "status")
     UserResponse toResponse(UserEntity entity);
 
     void updateUser(@MappingTarget UserEntity entity, UserUpdateRequest request);

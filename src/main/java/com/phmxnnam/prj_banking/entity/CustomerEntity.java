@@ -37,4 +37,7 @@ public class CustomerEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<UserEntity> users;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<AccountEntity> accounts;
 }

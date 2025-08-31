@@ -4,10 +4,12 @@ import com.phmxnnam.prj_banking.dto.request.RoleRequest;
 import com.phmxnnam.prj_banking.dto.response.RoleResponse;
 import com.phmxnnam.prj_banking.entity.CustomerEntity;
 import com.phmxnnam.prj_banking.entity.RoleEntity;
+import com.phmxnnam.prj_banking.entity.UserEntity;
 import com.phmxnnam.prj_banking.exception.AppException;
 import com.phmxnnam.prj_banking.exception.ErrorCode;
 import com.phmxnnam.prj_banking.mapper.RoleMapper;
 import com.phmxnnam.prj_banking.repository.RoleRepository;
+import com.phmxnnam.prj_banking.repository.UserRepository;
 import com.phmxnnam.prj_banking.service.IRoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class RoleService implements IRoleService {
 
     RoleRepository roleRepository;
     RoleMapper roleMapper;
-
+    UserRepository userRepository;
 
 
     @Override
@@ -43,16 +45,29 @@ public class RoleService implements IRoleService {
     @Override
     public String turnOnOffRole(String id) {
         RoleEntity role = roleRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_EXIST));
-        role.setIsActive(0);
+        List<UserEntity> listUser = userRepository.findAllByRoleName(id);
+        boolean on = true;
+        int active = 1;
+        if(role.getIsActive() == 1){
+            on = false;
+            active = 0;
+        }
+        role.setIsActive(active);
         roleRepository.save(role);
-
-
-        return "";
+        for(UserEntity user : listUser){
+            user.setIsActive(active);
+            userRepository.save(user);
+        }
+        if(on) return "turned on role.";
+        else return "turned off role.";
     }
 
     @Override
     public String deleteRole(String id) {
         RoleEntity role = roleRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));
+        role.getUsers().clear();
+        roleRepository.save(role);
+
         roleRepository.deleteById(id);
         return "Deleted Role.";
     }

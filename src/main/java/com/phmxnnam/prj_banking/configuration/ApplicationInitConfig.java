@@ -37,6 +37,9 @@ public class ApplicationInitConfig {
             if(!roleRepository.existsById("ADMIN")){
                 roleService.create(new RoleRequest("ADMIN","role admin of app"));
             }
+            if(!roleRepository.existsById("customer")){
+                roleService.create(new RoleRequest("customer","Client of app"));
+            }
             if(!userRepository.existsByUsername("admin")){
                 RoleEntity role = roleRepository.findById("ADMIN").orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_EXIST));
                 Set<RoleEntity> setRole = new HashSet<>();
