@@ -1,6 +1,5 @@
 package com.phmxnnam.prj_banking.dto.response;
 
-import com.phmxnnam.prj_banking.entity.CustomerEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

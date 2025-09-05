@@ -24,7 +24,9 @@ public enum ErrorCode {
     CUSTOMER_NOT_EXISTS(1010,"customer not exist."),
     PHONE_NUMBER_EXISTED(1011,"phone number already in use."),
     ACCOUNT_EXISTED(1012,"account number existed."),
-    ACCOUNT_NOT_EXISTS(1013,"account number not exists.")
+    ACCOUNT_NOT_EXISTS(1013,"account number not exists."),
+    PERMISSION_NOT_EXISTS(1014,"permission not exists."),
+    PERMISSION_EXISTED(1014,"permission existed.")
     ;
 
     ErrorCode(int code, String message) {

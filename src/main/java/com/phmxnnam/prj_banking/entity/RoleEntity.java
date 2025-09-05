@@ -25,4 +25,10 @@ public class RoleEntity{
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     Set<UserEntity> users;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable( name = "roles_permissions", joinColumns = @JoinColumn(name = "role_name"),
+            inverseJoinColumns = @JoinColumn(name = "permission_name") )
+    Set<PermissionEntity> permissions;
+
 }

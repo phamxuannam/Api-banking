@@ -8,11 +8,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class RoleRequest {
-    String name;
-    String des;
-    Set<String> permissions;
-
+@Getter @Setter
+public class AssignRoleForUserRequest {
+    Set<String> roles;
 }

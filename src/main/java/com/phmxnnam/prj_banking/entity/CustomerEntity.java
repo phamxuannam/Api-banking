@@ -35,9 +35,9 @@ public class CustomerEntity extends BaseEntity {
     @Column
     String address;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = false)
     Set<UserEntity> users;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = false)
     Set<AccountEntity> accounts;
 }

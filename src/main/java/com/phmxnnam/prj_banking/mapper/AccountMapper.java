@@ -6,9 +6,11 @@ import com.phmxnnam.prj_banking.entity.AccountEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = TransactionMapper.class)
 public interface AccountMapper {
     @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "transactionFrom", ignore = true)
+    @Mapping(target = "transactionTo", ignore = true)
     AccountEntity toEntity(AccountRequest request);
 
     @Mapping(source = "customer.id", target = "customer_id")

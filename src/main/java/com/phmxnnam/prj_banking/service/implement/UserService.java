@@ -1,6 +1,7 @@
 package com.phmxnnam.prj_banking.service.implement;
 
 import com.phmxnnam.prj_banking.configuration.PasswordConfig;
+import com.phmxnnam.prj_banking.dto.request.AssignRoleForUserRequest;
 import com.phmxnnam.prj_banking.dto.request.UserCreationRequest;
 import com.phmxnnam.prj_banking.dto.request.UserUpdateRequest;
 import com.phmxnnam.prj_banking.dto.response.UserResponse;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.Role;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +66,22 @@ public class UserService implements IUserService {
     public UserResponse getById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         return userMapper.toResponse(user);
+    }
+
+    @Override
+    public UserResponse assignRoleForUser(String id, AssignRoleForUserRequest request){
+        UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+        Set<RoleEntity> setRoles = new HashSet<>();
+        List<RoleEntity> listRoles = roleRepository.findAllById(request.getRoles());
+        for (RoleEntity entity : listRoles){
+            if(roleRepository.existsById(entity.getName()) && entity.getIsActive() == 1)
+                setRoles.add(entity);
+            else throw new AppException(ErrorCode.ROLE_NOT_EXIST);
+        }
+        user.getRoles().clear();
+        user.setRoles(setRoles);
+
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     @Override

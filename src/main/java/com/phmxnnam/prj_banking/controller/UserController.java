@@ -1,6 +1,7 @@
 package com.phmxnnam.prj_banking.controller;
 
 import com.phmxnnam.prj_banking.dto.ApiResponse;
+import com.phmxnnam.prj_banking.dto.request.AssignRoleForUserRequest;
 import com.phmxnnam.prj_banking.dto.request.UserCreationRequest;
 import com.phmxnnam.prj_banking.dto.request.UserUpdateRequest;
 import com.phmxnnam.prj_banking.dto.response.UserResponse;
@@ -42,6 +43,15 @@ public class UserController {
                 .code(200)
                 .message("OK")
                 .result(userService.getById(id))
+                .build();
+    }
+
+    @PatchMapping("/assignRoleForUser/{id}")
+    ApiResponse<UserResponse> assignRoleForUser(@PathVariable String id, @RequestBody AssignRoleForUserRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .code(200)
+                .message("OK")
+                .result(userService.assignRoleForUser(id, request))
                 .build();
     }
 

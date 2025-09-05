@@ -3,6 +3,8 @@ package com.phmxnnam.prj_banking.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,4 +15,5 @@ public class AccountResponse {
     double balance;
     int status;
     String customer_id;
+    List<TransactionResponse> transactionResponses;
 }

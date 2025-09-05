@@ -1,5 +1,6 @@
 package com.phmxnnam.prj_banking.dto.request;
 
+import com.phmxnnam.prj_banking.entity.RoleEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,11 +9,9 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
-public class RoleRequest {
+@Data
+@Builder
+public class PermissionRequest {
     String name;
-    String des;
-    Set<String> permissions;
-
+    String description;
 }
