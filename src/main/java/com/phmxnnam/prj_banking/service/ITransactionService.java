@@ -2,12 +2,11 @@ package com.phmxnnam.prj_banking.service;
 
 import com.phmxnnam.prj_banking.dto.request.TransactionRequest;
 import com.phmxnnam.prj_banking.dto.response.TransactionResponse;
-
-import java.util.List;
+import com.phmxnnam.prj_banking.entity.AccountEntity;
 
 public interface ITransactionService {
-    TransactionResponse create(TransactionRequest request);
-    List<TransactionResponse> getAll();
-    TransactionResponse getTranById(String id);
-    String deleteById(String id);
+    TransactionResponse deposit(String id, TransactionRequest request);
+    TransactionResponse withdraw(String id, TransactionRequest request);
+    TransactionResponse transfer(String id, TransactionRequest request);
+ //   boolean checkAccount(String accountNumber, boolean isTransfer);
 }

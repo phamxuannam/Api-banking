@@ -25,8 +25,12 @@ public enum ErrorCode {
     PHONE_NUMBER_EXISTED(1011,"phone number already in use."),
     ACCOUNT_EXISTED(1012,"account number existed."),
     ACCOUNT_NOT_EXISTS(1013,"account number not exists."),
+    ACCOUNT_INACTIVE(1016, "account inactive."),
     PERMISSION_NOT_EXISTS(1014,"permission not exists."),
-    PERMISSION_EXISTED(1014,"permission existed.")
+    PERMISSION_EXISTED(1014,"permission existed."),
+    INSUFFICIENT_BALANCE(1015, "insufficient balance."),
+    MIN_AMOUNT(1017, "at least 50 thousand VND.")
+
     ;
 
     ErrorCode(int code, String message) {

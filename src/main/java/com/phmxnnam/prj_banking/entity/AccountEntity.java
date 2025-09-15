@@ -8,6 +8,7 @@ import java.util.Set;
 
 
 @Entity
+@Table(name = "accounts")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor

@@ -13,12 +13,18 @@ import lombok.experimental.FieldDefaults;
 public class TransactionEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "from_account_id", nullable = false)
+    @JoinColumn(name = "from_accountId")
     AccountEntity fromAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_account_id", nullable = false)
+    @JoinColumn(name = "to_accountId")
     AccountEntity toAccount;
+
+    @Column
+    String fromAccountNumber;
+
+    @Column
+    String toAccountNumber;
 
     @Column(nullable = false)
     double amount;

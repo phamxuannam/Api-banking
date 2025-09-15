@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class TransactionResponse {
     String fromAccount;
+    String fromAccountNumber;
+    String toAccountNumber;
     String toAccount;
     double amount;
     String transactionType;

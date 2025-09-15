@@ -15,5 +15,6 @@ public class AccountResponse {
     double balance;
     int status;
     String customer_id;
-    List<TransactionResponse> transactionResponses;
+    List<TransactionResponse> transactionFrom;
+    List<TransactionResponse> transactionTo;
 }
