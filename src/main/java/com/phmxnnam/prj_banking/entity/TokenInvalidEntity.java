@@ -4,26 +4,20 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Set;
+import java.util.Date;
 
 @Entity
-@Table(name = "permissions")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Getter @Setter
-public class PermissionEntity {
-
+@Table(name = "tokens_invalid")
+public class TokenInvalidEntity {
     @Id
-    String name;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
-    @Column
-    String description;
-
-    @Column
-    int isActive;
-
-    @ManyToMany(mappedBy = "permissions")
-    Set<RoleEntity> roles;
-
+    String idToken;
+    Date expiryTime;
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter@Getter
+@Setter @Getter
 public class RoleEntity{
     @Id
     String name;

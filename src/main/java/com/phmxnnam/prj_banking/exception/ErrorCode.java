@@ -29,7 +29,8 @@ public enum ErrorCode {
     PERMISSION_NOT_EXISTS(1014,"permission not exists."),
     PERMISSION_EXISTED(1014,"permission existed."),
     INSUFFICIENT_BALANCE(1015, "insufficient balance."),
-    MIN_AMOUNT(1017, "at least 50 thousand VND.")
+    MIN_AMOUNT(1017, "at least 50 thousand VND."),
+    TOKEN_INVALID(1018,"token invalid")
 
     ;
 
