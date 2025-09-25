@@ -15,17 +15,20 @@ import com.phmxnnam.prj_banking.repository.CustomerRepository;
 import com.phmxnnam.prj_banking.repository.RoleRepository;
 import com.phmxnnam.prj_banking.repository.UserRepository;
 import com.phmxnnam.prj_banking.service.IUserService;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.Role;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
@@ -57,17 +60,23 @@ public class UserService implements IUserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public List<UserResponse> getAll() {
+        var context = SecurityContextHolder.getContext().getAuthentication();
+        String name = context.getName();
+        String role = context.getAuthorities().toString();
         return userRepository.findAll().stream().map(userMapper::toResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public UserResponse getById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         return userMapper.toResponse(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public UserResponse assignRoleForUser(String id, AssignRoleForUserRequest request){
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
@@ -84,6 +93,8 @@ public class UserService implements IUserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @PostAuthorize("returnObject.username == authentication.name ")
+    @PreAuthorize("hasRole('teller')")
     @Override
     public UserResponse changePassword(UserUpdateRequest request, String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
@@ -92,6 +103,7 @@ public class UserService implements IUserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String turnOnOffUserById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
@@ -106,6 +118,7 @@ public class UserService implements IUserService {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String deleteUserById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));

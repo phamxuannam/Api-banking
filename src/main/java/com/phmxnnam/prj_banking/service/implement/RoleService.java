@@ -2,7 +2,6 @@ package com.phmxnnam.prj_banking.service.implement;
 
 import com.phmxnnam.prj_banking.dto.request.RoleRequest;
 import com.phmxnnam.prj_banking.dto.response.RoleResponse;
-import com.phmxnnam.prj_banking.entity.CustomerEntity;
 import com.phmxnnam.prj_banking.entity.PermissionEntity;
 import com.phmxnnam.prj_banking.entity.RoleEntity;
 import com.phmxnnam.prj_banking.entity.UserEntity;
@@ -17,6 +16,7 @@ import com.phmxnnam.prj_banking.service.IRoleService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -34,14 +34,13 @@ public class RoleService implements IRoleService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
 
-
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public RoleResponse create(RoleRequest request) {
         if(roleRepository.existsById(request.getName())) throw new AppException(ErrorCode.ROLE_EXISTED);
         RoleEntity role = roleMapper.toEntity(request);
         role.setIsActive(1);
         Set<PermissionEntity> setPermission = new HashSet<>();
-
         List<PermissionEntity> permission = permissionRepository.findAllById(request.getPermissions());
         for (PermissionEntity entity : permission) {
             if(permissionRepository.existsById(entity.getName()) && entity.getIsActive() == 1)
@@ -52,11 +51,13 @@ public class RoleService implements IRoleService {
         return roleMapper.toResponse(roleRepository.save(role));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public List<RoleResponse> getAll() {
         return roleRepository.findAll().stream().map(roleMapper::toResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String turnOnOffRole(String id) {
         RoleEntity role = roleRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ROLE_NOT_EXIST));
@@ -77,6 +78,7 @@ public class RoleService implements IRoleService {
         else return "turned off role.";
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String deleteRole(String id) {
         RoleEntity role = roleRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST));

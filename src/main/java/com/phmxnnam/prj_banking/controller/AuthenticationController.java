@@ -5,6 +5,7 @@ import com.phmxnnam.prj_banking.dto.ApiResponse;
 import com.phmxnnam.prj_banking.dto.request.AuthenticationRequest;
 import com.phmxnnam.prj_banking.dto.request.IntrospectRequest;
 import com.phmxnnam.prj_banking.dto.request.LogoutRequest;
+import com.phmxnnam.prj_banking.dto.request.RefreshTokenRequest;
 import com.phmxnnam.prj_banking.dto.response.AuthenticationResponse;
 import com.phmxnnam.prj_banking.dto.response.IntrospectResponse;
 import com.phmxnnam.prj_banking.service.IAuthenticationService;
@@ -47,6 +48,15 @@ public class AuthenticationController {
                 .code(200)
                 .message("OK")
                 .result(authenticationService.logout(request))
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refresh(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .code(200)
+                .message("OK")
+                .result(authenticationService.refreshToken(request))
                 .build();
     }
 

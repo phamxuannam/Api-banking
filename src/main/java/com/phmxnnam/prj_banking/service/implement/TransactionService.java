@@ -10,16 +10,17 @@ import com.phmxnnam.prj_banking.mapper.TransactionMapper;
 import com.phmxnnam.prj_banking.repository.AccountRepository;
 import com.phmxnnam.prj_banking.repository.TransactionRepository;
 import com.phmxnnam.prj_banking.service.ITransactionService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-@Transactional
+@Transactional(rollbackFor = AppException.class)
 public class TransactionService implements ITransactionService {
 
     TransactionRepository transactionRepository;
@@ -27,6 +28,7 @@ public class TransactionService implements ITransactionService {
 
     AccountRepository accountRepository;
 
+    @PreAuthorize("hasRole('customer') || hasRole('teller')")
     @Override
     public TransactionResponse deposit(String id, TransactionRequest request) {
 
@@ -53,6 +55,7 @@ public class TransactionService implements ITransactionService {
         return transactionMapper.toResponse(transactionRepository.save(transaction));
     }
 
+    @PreAuthorize("hasRole('customer') || hasRole('teller') || hasAuthority('permission: approve')")
     @Override
     public TransactionResponse withdraw(String id, TransactionRequest request) {
         AccountEntity fromAccount = accountRepository.findByAccountNumber(request.getFromAccount()).orElseThrow(
@@ -81,13 +84,14 @@ public class TransactionService implements ITransactionService {
         return transactionMapper.toResponse(transactionRepository.save(transaction));
     }
 
+    @PreAuthorize("hasAuthority('permission:transfer')")
     @Override
     public TransactionResponse transfer(String id, TransactionRequest request) {
         AccountEntity toAccount = accountRepository.findByAccountNumber(request.getToAccount()).orElseThrow(
                 () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS) );
 
         AccountEntity fromAccount = accountRepository.findByAccountNumber(request.getFromAccount()).orElseThrow(
-                () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS) );
+                () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));
 
         if(! (id.equals(fromAccount.getId())) || (id.equals(toAccount.getId())) ) throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTS);
         if(toAccount.getIsActive() != 1) throw new AppException(ErrorCode.ACCOUNT_INACTIVE);

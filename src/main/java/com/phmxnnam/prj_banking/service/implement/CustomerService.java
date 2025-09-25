@@ -4,16 +4,16 @@ import com.phmxnnam.prj_banking.dto.request.CustomerCreationRequest;
 import com.phmxnnam.prj_banking.dto.request.CustomerUpdateRequest;
 import com.phmxnnam.prj_banking.dto.response.CustomerResponse;
 import com.phmxnnam.prj_banking.entity.CustomerEntity;
-import com.phmxnnam.prj_banking.entity.RoleEntity;
 import com.phmxnnam.prj_banking.exception.AppException;
 import com.phmxnnam.prj_banking.exception.ErrorCode;
 import com.phmxnnam.prj_banking.mapper.CustomerMapper;
 import com.phmxnnam.prj_banking.repository.CustomerRepository;
-import com.phmxnnam.prj_banking.repository.RoleRepository;
 import com.phmxnnam.prj_banking.service.ICustomerService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +26,7 @@ public class CustomerService implements ICustomerService {
     CustomerRepository customerRepository;
     CustomerMapper customerMapper;
 
-    RoleRepository roleRepository;
-
+    @PreAuthorize("hasRole('teller')")
     @Override
     public CustomerResponse create(CustomerCreationRequest request) {
         if(customerRepository.existsByIdentification(request.getIdentification()))
@@ -37,17 +36,21 @@ public class CustomerService implements ICustomerService {
         return customerMapper.toResponse(customerRepository.save(customers));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public List<CustomerResponse> getAll(){
         return customerRepository.findAll().stream().map(customerMapper::toResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('teller')")
     @Override
     public CustomerResponse getById(String id) {
         CustomerEntity customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         return customerMapper.toResponse(customer);
     }
 
+    @PostAuthorize("returnObject.username ==  authentication.name")
+    @PreAuthorize("hasAuthority('permission:edit')")
     @Override
     public CustomerResponse updateById(CustomerUpdateRequest request, String id) {
         CustomerEntity customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
@@ -56,22 +59,7 @@ public class CustomerService implements ICustomerService {
         return customerMapper.toResponse(customerRepository.save(customer));
     }
 
-    @Override
-    public String turnOnOffCus(String id) {
-//        CustomerEntity customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
-//        if(customer.getIsActive() == 1){
-//            customer.setIsActive(0);
-//            customerRepository.save(customer);
-//            return "Turned off active of account.";
-//        }
-//        else{
-//            customer.setIsActive(1);
-//            customerRepository.save(customer);
-//            return "Turned on active of account.";
-//        }
-        return "";
-    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public String deleteCus(String id) {
         CustomerEntity customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));

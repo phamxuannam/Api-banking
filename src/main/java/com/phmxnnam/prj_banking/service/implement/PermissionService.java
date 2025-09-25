@@ -11,6 +11,7 @@ import com.phmxnnam.prj_banking.service.IPermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class PermissionService implements IPermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public PermissionResponse create(PermissionRequest request) {
         if(permissionRepository.existsById(request.getName())) throw
@@ -33,6 +35,7 @@ public class PermissionService implements IPermissionService {
         return permissionMapper.toResponse(permissionRepository.save(permission));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public List<PermissionResponse> getAll() {
         return permissionRepository.findAll().stream()
@@ -40,6 +43,7 @@ public class PermissionService implements IPermissionService {
                 .toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public PermissionResponse getById(String id) {
         PermissionEntity permission = permissionRepository.findById(id).orElseThrow( () ->
@@ -48,6 +52,7 @@ public class PermissionService implements IPermissionService {
         return permissionMapper.toResponse(permission);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String turnOnOffByIf(String id) {
         PermissionEntity permission = permissionRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.PERMISSION_NOT_EXISTS));
@@ -62,6 +67,7 @@ public class PermissionService implements IPermissionService {
         else return "turned off permission.";
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String deleteById(String id) {
         PermissionEntity permission = permissionRepository.findById(id).orElseThrow( () ->

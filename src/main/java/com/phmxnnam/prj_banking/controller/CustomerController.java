@@ -54,15 +54,6 @@ public class CustomerController {
                 .build();
     }
 
-    @PatchMapping("/{id}")
-    ApiResponse<String> turnOnOfCus(@PathVariable String id){
-        return ApiResponse.<String>builder()
-                .code(200)
-                .message("OK")
-                .result(customerService.turnOnOffCus(id))
-                .build();
-    }
-
     @DeleteMapping
     ApiResponse<String> deleteCus(@PathVariable String id){
         return ApiResponse.<String>builder()

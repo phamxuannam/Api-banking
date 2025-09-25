@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.phmxnnam.prj_banking.dto.request.AuthenticationRequest;
 import com.phmxnnam.prj_banking.dto.request.IntrospectRequest;
 import com.phmxnnam.prj_banking.dto.request.LogoutRequest;
+import com.phmxnnam.prj_banking.dto.request.RefreshTokenRequest;
 import com.phmxnnam.prj_banking.dto.response.AuthenticationResponse;
 import com.phmxnnam.prj_banking.dto.response.IntrospectResponse;
 import com.phmxnnam.prj_banking.entity.TokenInvalidEntity;
@@ -61,6 +62,7 @@ public class AuthenticationService implements IAuthenticationService {
                 new AppException(ErrorCode.USER_NOT_EXISTS) );
         boolean checkPass = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!checkPass) throw new AppException(ErrorCode.PASSWORD_INVALID);
+        if(!(user.getIsActive() == 1)) throw new AppException(ErrorCode.USER_NOT_EXISTS);
         String token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
@@ -100,9 +102,15 @@ public class AuthenticationService implements IAuthenticationService {
         UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
         if(!CollectionUtils.isEmpty(user.getRoles())){
             user.getRoles().forEach(role -> {
-                stringJoiner.add("ROLE_" + role.getName());
-                if(!CollectionUtils.isEmpty(role.getPermissions()))
-                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
+                if (role.getIsActive() == 1) {
+                    stringJoiner.add("ROLE_" + role.getName());
+                    if(!CollectionUtils.isEmpty(role.getPermissions())) {
+                        role.getPermissions().forEach(permission -> {
+                            if (permission.getIsActive() == 1)
+                                stringJoiner.add(permission.getName());
+                        });
+                    }
+                }
             });
         }
         return stringJoiner.toString();
@@ -152,6 +160,28 @@ public class AuthenticationService implements IAuthenticationService {
                 .build();
         tokenInvalidRepository.save(tokenInvalid);
         return "logout successfully.";
+    }
+
+    @Override
+    public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
+        String tokenOld = request.getToken();
+        SignedJWT signedToken = verifyToken(tokenOld, true);
+        String id = signedToken.getJWTClaimsSet().getJWTID();
+        Date expTime = signedToken.getJWTClaimsSet().getExpirationTime();
+        String username = signedToken.getJWTClaimsSet().getSubject();
+
+        TokenInvalidEntity tokenInvalid = TokenInvalidEntity.builder()
+                .idToken(id)
+                .expiryTime(expTime)
+                .build();
+        tokenInvalidRepository.save(tokenInvalid);
+
+        UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));
+        String tokenNew = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(tokenNew)
+                .valid(true)
+                .build();
     }
 
 }

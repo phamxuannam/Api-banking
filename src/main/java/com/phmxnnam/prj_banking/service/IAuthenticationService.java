@@ -5,6 +5,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.phmxnnam.prj_banking.dto.request.AuthenticationRequest;
 import com.phmxnnam.prj_banking.dto.request.IntrospectRequest;
 import com.phmxnnam.prj_banking.dto.request.LogoutRequest;
+import com.phmxnnam.prj_banking.dto.request.RefreshTokenRequest;
 import com.phmxnnam.prj_banking.dto.response.AuthenticationResponse;
 import com.phmxnnam.prj_banking.dto.response.IntrospectResponse;
 import com.phmxnnam.prj_banking.entity.UserEntity;
@@ -18,5 +19,5 @@ public interface IAuthenticationService {
     String logout(LogoutRequest request) throws ParseException, JOSEException;
     SignedJWT verifyToken(String token, boolean refresh) throws JOSEException, ParseException;
     IntrospectResponse introspect(IntrospectRequest request) throws ParseException, JOSEException;
-
+    AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException;
 }

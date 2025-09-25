@@ -11,6 +11,5 @@ public interface ICustomerService {
     List<CustomerResponse> getAll();
     CustomerResponse getById(String id);
     CustomerResponse updateById(CustomerUpdateRequest request, String id);
-    String turnOnOffCus(String id);
     String deleteCus(String id);
 }

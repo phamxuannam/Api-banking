@@ -13,6 +13,7 @@ import com.phmxnnam.prj_banking.service.IAccountService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class AccountService implements IAccountService {
     AccountMapper accountMapper;
     CustomerRepository customerRepository;
 
+    @PreAuthorize("hasRole('teller')")
     @Override
     public AccountResponse create(AccountRequest request) {
         CustomerEntity customer = customerRepository.findById(request.getCustomer_id()).orElseThrow( () ->
@@ -44,17 +46,20 @@ public class AccountService implements IAccountService {
         return accountMapper.toResponse(accountRepository.save(account));
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public List<AccountResponse> getAll() {
         return accountRepository.findAll().stream().map(account -> accountMapper.toResponse(account)).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
     @Override
     public AccountResponse getAccById(String id) {
         AccountEntity account = accountRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));
         return accountMapper.toResponse(account);
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String turnOnOffAccById(String id) {
         AccountEntity account = accountRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));
@@ -70,6 +75,7 @@ public class AccountService implements IAccountService {
         else return "turned off account.";
     }
 
+    @PreAuthorize("hasRole('ADMIN') || hasRole('management')")
     @Override
     public String deleteAccById(String id) {
         AccountEntity account = accountRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));
