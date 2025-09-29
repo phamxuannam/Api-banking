@@ -4,18 +4,27 @@ import com.phmxnnam.prj_banking.dto.request.TransactionRequest;
 import com.phmxnnam.prj_banking.dto.response.TransactionResponse;
 import com.phmxnnam.prj_banking.entity.AccountEntity;
 import com.phmxnnam.prj_banking.entity.TransactionEntity;
+import com.phmxnnam.prj_banking.entity.UserEntity;
+import com.phmxnnam.prj_banking.enums.AuditActionEnum;
+import com.phmxnnam.prj_banking.event.TransactionActionEvent;
 import com.phmxnnam.prj_banking.exception.AppException;
 import com.phmxnnam.prj_banking.exception.ErrorCode;
 import com.phmxnnam.prj_banking.mapper.TransactionMapper;
 import com.phmxnnam.prj_banking.repository.AccountRepository;
 import com.phmxnnam.prj_banking.repository.TransactionRepository;
+import com.phmxnnam.prj_banking.repository.UserRepository;
 import com.phmxnnam.prj_banking.service.ITransactionService;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -27,6 +36,13 @@ public class TransactionService implements ITransactionService {
     TransactionMapper transactionMapper;
 
     AccountRepository accountRepository;
+    UserRepository userRepository;
+    ApplicationEventPublisher eventPublisher;
+
+    public String currentUserInfo(){
+        var auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getName();
+    }
 
     @PreAuthorize("hasRole('customer') || hasRole('teller')")
     @Override
@@ -52,7 +68,22 @@ public class TransactionService implements ITransactionService {
         transaction.setBalancerAfter(after);
         transaction.setStatus("done");
 
-        return transactionMapper.toResponse(transactionRepository.save(transaction));
+        TransactionEntity saveTransaction = transactionRepository.save(transaction);
+        UserEntity user = userRepository.findByUsername(currentUserInfo()).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        eventPublisher.publishEvent(TransactionActionEvent.builder()
+                        .transactionId(saveTransaction.getId())
+                        .auditAction(AuditActionEnum.DEPOSIT)
+                        .statusBefore(null)
+                        .statusAfter("DONE")
+                        .amount(request.getAmount())
+                        .actor(currentUserInfo())
+                        .actorId(user.getId())
+                        .fromAccountNumber(null)
+                        .toAccountNumber(saveTransaction.getToAccountNumber())
+                .build());
+
+        return transactionMapper.toResponse(saveTransaction);
     }
 
     @PreAuthorize("hasRole('customer') || hasRole('teller') || hasAuthority('permission: approve')")
@@ -81,7 +112,22 @@ public class TransactionService implements ITransactionService {
         transaction.setBalancerAfter(after);
         transaction.setStatus("done");
 
-        return transactionMapper.toResponse(transactionRepository.save(transaction));
+        TransactionEntity saveTransaction = transactionRepository.save(transaction);
+        UserEntity user = userRepository.findByUsername(currentUserInfo()).orElseThrow( () -> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        eventPublisher.publishEvent(TransactionActionEvent.builder()
+                .transactionId(saveTransaction.getId())
+                .auditAction(AuditActionEnum.WITHDRAW)
+                .statusBefore(null)
+                .statusAfter("DONE")
+                .amount(request.getAmount())
+                .actor(currentUserInfo())
+                .actorId(user.getId())
+                .fromAccountNumber(saveTransaction.getToAccountNumber())
+                .toAccountNumber(null)
+                .build());
+
+        return transactionMapper.toResponse(saveTransaction);
     }
 
     @PreAuthorize("hasAuthority('permission:transfer')")
@@ -120,9 +166,23 @@ public class TransactionService implements ITransactionService {
             transaction.setBalancerBefore(beforeToAcc);
             transaction.setBalancerAfter(afterToAcc);
         }
-        transactionRepository.save(transaction);
 
-        return transactionMapper.toResponse(transaction);
+        TransactionEntity saveTransaction = transactionRepository.save(transaction);
+        UserEntity user = userRepository.findByUsername(currentUserInfo()).orElseThrow(()-> new AppException(ErrorCode.USER_NOT_EXISTS));
+
+        eventPublisher.publishEvent(TransactionActionEvent.builder()
+                .transactionId(saveTransaction.getId())
+                .auditAction(AuditActionEnum.TRANSFER)
+                .statusBefore(null)
+                .statusAfter("DONE")
+                .amount(request.getAmount())
+                .actor(currentUserInfo())
+                .actorId(user.getId())
+                .fromAccountNumber(saveTransaction.getFromAccountNumber())
+                .toAccountNumber(saveTransaction.getToAccountNumber())
+                .build());
+
+        return transactionMapper.toResponse(saveTransaction);
     }
 
 }

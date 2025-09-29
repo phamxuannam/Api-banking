@@ -31,10 +31,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> HandlingMethodArgumentNotValidException(MethodArgumentNotValidException exception){
         ApiResponse apiResponse = new ApiResponse();
-        String enumKey = exception.getFieldErrors().getFirst().getField();
+        String enumKey = exception.getFieldErrors().getFirst().getDefaultMessage();
         ErrorCode errorCode = ErrorCode.valueOf(enumKey);
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = UnsupportedOperationException.class)
+    ResponseEntity<ApiResponse> HandlingUnsupportedOperationException(UnsupportedOperationException exception){
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(ErrorCode.APPEND_ONLY.getCode());
+        apiResponse.setMessage(ErrorCode.APPEND_ONLY.getMessage());
 
         return ResponseEntity.badRequest().body(apiResponse);
     }

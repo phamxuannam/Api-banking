@@ -1,12 +1,7 @@
 package com.phmxnnam.prj_banking.exception;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
-@NoArgsConstructor
 @Getter
 public enum ErrorCode {
 
@@ -14,7 +9,7 @@ public enum ErrorCode {
     USER_NOT_EXISTS(1000 ,"user not exist."),
     USER_EXISTED(1001,"user existed."),
     NAME_INVALID(1002,"must be at least 10 characters."),
-    USERNAME_INVALID(1003, "must be at least 8 character."),
+    USERNAME_INVALID(1003, "must be at least 8 characters."),
     PASSWORD_INVALID(1004, "must be at least 8 characters."),
     EMAIL_INVALID(1005, "email invalid."),
     PHONE_INVALID(1006,"must be 10 numbers."),
@@ -30,7 +25,8 @@ public enum ErrorCode {
     PERMISSION_EXISTED(1014,"permission existed."),
     INSUFFICIENT_BALANCE(1015, "insufficient balance."),
     MIN_AMOUNT(1017, "at least 50 thousand VND."),
-    TOKEN_INVALID(1018,"token invalid")
+    TOKEN_INVALID(1018,"token invalid"),
+    APPEND_ONLY(1019, "append-only")
 
     ;
 
