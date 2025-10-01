@@ -1,6 +1,5 @@
 package com.phmxnnam.prj_banking.dto.request;
 
-import com.phmxnnam.prj_banking.entity.CustomerEntity;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Builder
 public class UserCreationRequest {
 
     @Size(min = 10, message = "USERNAME_INVALID")

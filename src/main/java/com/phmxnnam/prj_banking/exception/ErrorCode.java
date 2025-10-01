@@ -26,7 +26,8 @@ public enum ErrorCode {
     INSUFFICIENT_BALANCE(1015, "insufficient balance."),
     MIN_AMOUNT(1017, "at least 50 thousand VND."),
     TOKEN_INVALID(1018,"token invalid"),
-    APPEND_ONLY(1019, "append-only")
+    APPEND_ONLY(1019, "append-only"),
+    SYSTEM_ERROR(1020, "system error")
 
     ;
 

@@ -60,7 +60,7 @@ public class UserService implements IUserService {
         return userMapper.toResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public List<UserResponse> getAll() {
         var context = SecurityContextHolder.getContext().getAuthentication();
@@ -69,7 +69,7 @@ public class UserService implements IUserService {
         return userRepository.findAll().stream().map(userMapper::toResponse).toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public UserResponse getById(String id) {
         UserEntity user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));

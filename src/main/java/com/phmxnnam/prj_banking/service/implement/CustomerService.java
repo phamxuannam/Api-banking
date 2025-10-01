@@ -36,7 +36,7 @@ public class CustomerService implements ICustomerService {
         return customerMapper.toResponse(customerRepository.save(customers));
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public List<CustomerResponse> getAll(){
         return customerRepository.findAll().stream().map(customerMapper::toResponse).toList();
@@ -50,7 +50,7 @@ public class CustomerService implements ICustomerService {
     }
 
     @PostAuthorize("returnObject.username ==  authentication.name")
-    @PreAuthorize("hasAuthority('permission:edit')")
+    @PreAuthorize("hasAuthority('edit')")
     @Override
     public CustomerResponse updateById(CustomerUpdateRequest request, String id) {
         CustomerEntity customer = customerRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTS));

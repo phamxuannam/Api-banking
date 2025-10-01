@@ -46,13 +46,13 @@ public class AccountService implements IAccountService {
         return accountMapper.toResponse(accountRepository.save(account));
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public List<AccountResponse> getAll() {
         return accountRepository.findAll().stream().map(account -> accountMapper.toResponse(account)).toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public AccountResponse getAccById(String id) {
         AccountEntity account = accountRepository.findById(id).orElseThrow(()-> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));

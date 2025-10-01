@@ -17,4 +17,6 @@ public class TransactionRequest {
     double amount;
 
     String transactionType;
+
+    int pointRollBack;
 }

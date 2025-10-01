@@ -59,6 +59,9 @@ public class TransactionService implements ITransactionService {
         toAccount.setBalance(after);
         accountRepository.save(toAccount);
 
+    //    test rollback/ auditLog failure
+    //    if(request.getPointRollBack() == 1) throw new AppException(ErrorCode.SYSTEM_ERROR);
+
         TransactionEntity transaction = transactionMapper.toEntity(request);
         transaction.setFromAccount(null);
         transaction.setToAccount(toAccount);
@@ -86,7 +89,7 @@ public class TransactionService implements ITransactionService {
         return transactionMapper.toResponse(saveTransaction);
     }
 
-    @PreAuthorize("hasRole('customer') || hasRole('teller') || hasAuthority('permission: approve')")
+    @PreAuthorize("hasRole('customer') || hasAuthority('transfer')")
     @Override
     public TransactionResponse withdraw(String id, TransactionRequest request) {
         AccountEntity fromAccount = accountRepository.findByAccountNumber(request.getFromAccount()).orElseThrow(
@@ -102,6 +105,9 @@ public class TransactionService implements ITransactionService {
         double after = fromAccount.getBalance() - request.getAmount();
         fromAccount.setBalance(after);
         accountRepository.save(fromAccount);
+
+//    test rollback/ auditLog failure
+//        if(request.getPointRollBack() == 1) throw new AppException(ErrorCode.SYSTEM_ERROR);
 
         TransactionEntity transaction = transactionMapper.toEntity(request);
         transaction.setFromAccount(fromAccount);
@@ -123,30 +129,33 @@ public class TransactionService implements ITransactionService {
                 .amount(request.getAmount())
                 .actor(currentUserInfo())
                 .actorId(user.getId())
-                .fromAccountNumber(saveTransaction.getToAccountNumber())
-                .toAccountNumber(null)
+                .fromAccountNumber(fromAccount.getAccountNumber())
+                .toAccountNumber("null")
                 .build());
 
         return transactionMapper.toResponse(saveTransaction);
     }
 
-    @PreAuthorize("hasAuthority('permission:transfer')")
+    @PreAuthorize("hasRole('customer') || hasAuthority('transfer')")
     @Override
     public TransactionResponse transfer(String id, TransactionRequest request) {
-        AccountEntity toAccount = accountRepository.findByAccountNumber(request.getToAccount()).orElseThrow(
-                () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS) );
-
         AccountEntity fromAccount = accountRepository.findByAccountNumber(request.getFromAccount()).orElseThrow(
                 () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS));
-
-        if(! (id.equals(fromAccount.getId())) || (id.equals(toAccount.getId())) ) throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTS);
-        if(toAccount.getIsActive() != 1) throw new AppException(ErrorCode.ACCOUNT_INACTIVE);
-        if(fromAccount.getBalance() < request.getAmount()) throw new AppException(ErrorCode.INSUFFICIENT_BALANCE);
 
         double beforeFromAcc = fromAccount.getBalance();
         double afterFromAcc = fromAccount.getBalance() - request.getAmount();
         fromAccount.setBalance(afterFromAcc);
         accountRepository.save(fromAccount);
+
+        AccountEntity toAccount = accountRepository.findByAccountNumber(request.getToAccount()).orElseThrow(
+                () -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTS) );
+
+        if(! (id.equals(fromAccount.getId())) || (id.equals(toAccount.getId())) ) throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTS);
+        if(toAccount.getIsActive() != 1) throw new AppException(ErrorCode.ACCOUNT_INACTIVE);
+        if(fromAccount.getBalance() < request.getAmount()) throw new AppException(ErrorCode.INSUFFICIENT_BALANCE);
+
+        //test rollback/auditLog failure & aspect
+        //if(request.getPointRollBack() == 1) throw new AppException(ErrorCode.SYSTEM_ERROR);
 
         double beforeToAcc = toAccount.getBalance();
         double afterToAcc = toAccount.getBalance() + request.getAmount();

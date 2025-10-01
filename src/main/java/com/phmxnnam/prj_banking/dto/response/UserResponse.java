@@ -9,9 +9,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
+@Builder
 public class UserResponse {
     String username;
-    String password;
+//    String password;
     String customer_id;
     int status;
     List<RoleResponse> roles;

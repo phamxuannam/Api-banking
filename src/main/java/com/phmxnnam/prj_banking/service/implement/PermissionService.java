@@ -3,10 +3,12 @@ package com.phmxnnam.prj_banking.service.implement;
 import com.phmxnnam.prj_banking.dto.request.PermissionRequest;
 import com.phmxnnam.prj_banking.dto.response.PermissionResponse;
 import com.phmxnnam.prj_banking.entity.PermissionEntity;
+import com.phmxnnam.prj_banking.entity.RoleEntity;
 import com.phmxnnam.prj_banking.exception.AppException;
 import com.phmxnnam.prj_banking.exception.ErrorCode;
 import com.phmxnnam.prj_banking.mapper.PermissionMapper;
 import com.phmxnnam.prj_banking.repository.PermissionRepository;
+import com.phmxnnam.prj_banking.repository.RoleRepository;
 import com.phmxnnam.prj_banking.service.IPermissionService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class PermissionService implements IPermissionService {
         return permissionMapper.toResponse(permissionRepository.save(permission));
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public List<PermissionResponse> getAll() {
         return permissionRepository.findAll().stream()
@@ -43,7 +45,7 @@ public class PermissionService implements IPermissionService {
                 .toList();
     }
 
-    @PreAuthorize("hasRole('ADMIN') || hasAuthority('permission:read')")
+    @PreAuthorize("hasRole('ADMIN') || hasAuthority('read')")
     @Override
     public PermissionResponse getById(String id) {
         PermissionEntity permission = permissionRepository.findById(id).orElseThrow( () ->
